@@ -73,17 +73,17 @@ public class SudokuBacktrack {
 	 * @return true if the board has a solution, false if it does not
 	 */
 	public boolean solver(){
-		//Node temp = findNextBlank();  < nick returns node
+		Cell temp = findNextBlank();  
 		for(int num=1; num<=length*width; num++){
 			//if duplicates is false, set space to blank and continue with for loop
-			//temp.value = num;
-			if (duplicates(board) == false){
+			temp.value = num;
+			if (duplicates(board, temp) == false){
 				if (solver())	//recursive call to itself
 					return true;
 			}
 			else{
 				//assign blank to space so that we can rerun for loop and try next digit
-				//fillinBlank(0);
+				temp.value = 0;
 			}
 		}
 		return false;
@@ -191,11 +191,11 @@ public class SudokuBacktrack {
 	 * @return the number which all Sudoku matrices of these dimensions will add up to
 	 */
 	public int calcSumInt(int boardSize){
-		int bs = boardSize;
+		int sumInt = 0;
+		/*int bs = boardSize;
 		int sumRowInt;
-		int sumInt;
 		sumRowInt = (((bs*bs) + bs)/2);
-		sumInt = sumRowInt * bs;
+		sumInt = sumRowInt * bs;*/
 		return sumInt;
 	}
 
@@ -233,11 +233,11 @@ public class SudokuBacktrack {
 	public int findInitialPuzzleSum() {
 		int sum = 0;
 
-		for(int i = 0; i < board.length; i++){
+		/*for(int i = 0; i < board.length; i++){
 			for(int j = 0; j < board[i].length; j++){
 				sum = sum + board[i][j].value;
 			}
-		}
+		}*/
 		
 		return sum;
 	}
@@ -264,63 +264,64 @@ public class SudokuBacktrack {
 	 * @param board the board to be checked
 	 * @return true if the board does not contain duplicates, false if the board contains duplicates
 	 */
-	public boolean duplicates(Cell[][] board){
-		//boolean dupeNums = false;
-		//cell[][] b = board;
-
-		return (checkColumns(board) || checkRows(board) || checkBoxes(board));
-		
-		
-		//This seems a bit over complicated to me, but if it's clearer to you, feel free to uncomment/use it again
-		
-		/*if (checkColumns(board) || 
-				checkRows(board)  || 
-				checkBoxes(board) ){
-			//System.out.println("Duplicates Found");
-			return dupeNums;
-		}
-		else{
-			//System.out.println("NO DUPLICATES!");
-			dupeNums = true;
-			return dupeNums;
-		}*/
-		
+	public boolean duplicates(Cell[][] board, Cell temp){
+		return (checkColumn(board,temp) || checkRow(board,temp) || checkBox(board,temp));
 	}
-
 	
+	public boolean checkBox(Cell[][] board, Cell temp){
+		return false;
+	}
 	
+	public boolean checkRow(Cell[][] board, Cell temp){
+		return false;
+	}
 	/**
-	 * checks each column for duplicate numbers
+ 	 * checks current column for duplicate numbers
+	 * @param board the board to be checked
+	 * @param the cell whos column needs to be checked
+	 * @return true if the current column contains duplicate numbers, false if the current column do not contains no duplicates
+	 */
+	public boolean checkColumn(Cell[][] board, Cell temp){
+		boolean[] nums;
+		
+		for (int i = 0; i < board.length; i++) {
+			nums = new boolean[boardSize + 1];
+			for (int j=0; j < board.length; j++) {
+				if (nums[board[j][i].value]){
+					return true;
+				}
+				else{
+					nums[board[j][i].value] = true;
+				}
+					
+			}
+		}
+		return false;
+	}
+	
+	/* CHECK METHODS FOR TESTING */
+	/**
+ 	 * checks each column for duplicate numbers
 	 * @param board the board to be checked
 	 * @return true if the columns of the board contain duplicated numbers, false if the columns do not contain duplicated numbers
 	 */
 	public boolean checkColumns(Cell[][] board){
-		//boolean dupeNums = false;
-		//int[][] b = board;
-		//HashSet<Integer> hset;
 		boolean[] numbers;
-
+		
 		for (int i = 0; i < board.length; i++) {
-			//hset = new HashSet<Integer>();
 			numbers = new boolean[boardSize + 1];
 			for (int j=0; j < board.length; j++) {
-				if (/*hset.contains(board[j][i])*/numbers[board[j][i].value]){
-					//System.out.println("column duplicates found: " + board[i][j]);
-					//System.out.println(i + " by " + j);
-					//dupeNums = true;
+				if (numbers[board[j][i].value]){
 					return true;
 				}
 				else{
-					//hset.add(board[j][i]);
 					numbers[board[j][i].value] = true;
 				}
 					
 			}
 		}
-		//System.out.println("No column duplicates found!");
 		return false;
 	}
-
 
 	/**
 	 * checks each row for duplicate numbers
@@ -339,20 +340,17 @@ public class SudokuBacktrack {
 				}
 				else{
 					numbers[board2[i][j].value] = true;
-				}
-					
+				}	
 			}
 		}
 		return false;
 	}
-
 
 	/**
 	 * Checks the inner boxes for duplicate items
 	 * @param board2 the board to be checked
 	 * @return false if the board contains no duplicate items, true if the board contains duplicates
 	 */
-	//TODO modify check methods to check only current row,col, and box of current blank
 	public boolean checkBoxes(Cell[][] board2){
 		boolean[] numbers; 
 
@@ -377,6 +375,8 @@ public class SudokuBacktrack {
 		}
 		return false;
 	}
+	
+	/* CELL CLASS */
 	//Gave cell package access so the driver can use it- np
 	class Cell {
 		public int value;
@@ -386,8 +386,11 @@ public class SudokuBacktrack {
 		}
 	}
 	
-	public Cell findNextBlack()
-	{
+	/**
+	 * Finds the next available blank in the puzzle
+	 * @return cell location of next blank cell or null if no other blanks
+	 */
+	public Cell findNextBlank(){
 		
 		for (int i = 0; i < boardSize; i++){
 			for (int j = 0; j < boardSize; j++){
@@ -402,6 +405,7 @@ public class SudokuBacktrack {
 	
 	
 }
+
 
 
 
