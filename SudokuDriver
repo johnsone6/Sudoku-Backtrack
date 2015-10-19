@@ -51,7 +51,8 @@ public class SudokuDriver {
 					for (int l = 0; l < boardSize; l++){
 						board[w][l] = new Cell();
 						board[w][l].value = fileScanner.nextInt();
-
+						board[w][l].row = w;
+						board[w][l].col = l;
 						
 					}
 					
