@@ -69,7 +69,9 @@ public class SudokuDriver {
 					printBoard(board);
 				}
 				
-				
+				else{
+					System.out.println("no solution found... sucks");
+				}
 				
 				//console.close();
 				//break;
@@ -87,11 +89,10 @@ public class SudokuDriver {
 		}
 	//}
 	
-	
-	
-	
 	private static void printBoard(Cell[][] board){
+		
 		for (int w = 0; w < board.length; w++){
+			
 			for (int l = 0; l < board.length; l++){
 				System.out.print(board[w][l].value + " ");
 			}
