@@ -101,11 +101,12 @@ public class SudokuBacktrack {
 				if (solver())	//recursive call to itself
 					return true;
 			}
-			else{
+			//else{
 				//assign blank to space so that we can rerun for loop and try next digit
-				temp.value = 0;
-			}
+				//temp.value = 0;
+			//}
 		}
+		temp.value = 0;
 		return false;
 	}
 
