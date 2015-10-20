@@ -302,8 +302,8 @@ public class SudokuBacktrack {
 		//getting beginning of box column
 		startCol = (temp.col/width)*width;
 		
-		for (int rows=startRow; rows<width +startRow; rows++){
-			for (int cols=startCol; cols<length + startCol; cols++){
+		for (int rows=startRow; rows<length +startRow; rows++){
+			for (int cols=startCol; cols<width + startCol; cols++){
 				if (nums[board[rows][cols].value] && board[rows][cols].value != 0){
 					return true;
 				}
