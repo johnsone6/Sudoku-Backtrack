@@ -37,7 +37,7 @@ public class SudokuBacktrack {
 		maximumTries = temp;
 		
 		
-		System.out.println(maximumTries + " possible combinations");
+		//System.out.println(maximumTries + " possible combinations");
 		//counter = new ArrayCounter(numBlanks, boardSize);
 	}
 
@@ -63,17 +63,23 @@ public class SudokuBacktrack {
 
 	
 	public boolean findSolution(){
-		System.out.println("checking if there are blanks...");
-		if (findNextBlank() == null){
-			if (/*solutionFound || */!duplicatesCheck(board)){
-				return true;
+		System.out.print("Are there blanks?  ");
+		
+		if (findNextBlank() == null){	//if there are no blanks
+			if (/*solutionFound || */!duplicatesCheck(board)){	//and if there are no duplicates
+				System.out.println("No.\n" + "Are there duplicates?  " + "No.");
+				createFinalSolution(board);
+				solutionFound=true;
+				return true;	//solution has been found
 			}
-			else{
-				System.out.println("There are blanks, start solver method...");
+			else{	//there are no blanks but duplicates exist ????
+				System.out.println("No.\n" + "Are there duplicates?\n" + "Yes.");
 				return solver();
 			}
 		}
-		return solver();
+		System.out.println("Yes.");
+		System.out.println("Attempting to solve puzzle...");
+		return solver();	//blanks exist
 		
 	}
 	/**
@@ -341,8 +347,6 @@ public class SudokuBacktrack {
 		}
 		return false;
 	}
-	
-	/* CHECK METHODS FOR TESTING */
 	/**
  	 * checks each column for duplicate numbers
 	 * @param board the board to be checked
@@ -354,7 +358,7 @@ public class SudokuBacktrack {
 		for (int i = 0; i < board.length; i++) {
 			numbers = new boolean[boardSize + 1];
 			for (int j=0; j < board.length; j++) {
-				if (numbers[board[j][i].value]){
+				if (numbers[board[j][i].value] && board[j][i].value != 0){
 					return true;
 				}
 				else{
@@ -375,7 +379,7 @@ public class SudokuBacktrack {
 		for (int i = 0; i < board2.length; i++) {
 			numbers = new boolean[boardSize + 1];
 			for (int j=0; j < board2.length; j++) {
-				if (numbers[board2[i][j].value]){
+				if (numbers[board2[i][j].value] && board[i][j].value != 0){
 					//System.out.println("row duplicates found: " + board[i][j]);
 	            	//System.out.println(i + " by " + j);
 					return true;
@@ -405,7 +409,7 @@ public class SudokuBacktrack {
 				//Inner loops check each box for duplicate numbers
 				for (int x = boxX; x < length + boxX; x++){
 					for (int y = boxY; y < width + boxY; y++){
-						if (numbers[board2[x][y].value]){
+						if (numbers[board2[x][y].value] && board[x][y].value != 0){
 							return true;
 						}
 						else{
