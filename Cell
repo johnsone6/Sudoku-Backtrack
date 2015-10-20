@@ -1,8 +1,12 @@
 
 public class Cell {
 	public int value;
+	public int row;
+	public int col;
 	
 	public Cell(){
 		value =0;
+		row=0;
+		col=0;
 	}
 }
