@@ -4,29 +4,23 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
+ * Class: DAA-Afternoon section
+ * Project 2: Sudoku Backtracking
  * Project members: Chris Houze, Nick Perkins, Erica Johnson
  *
  */
 
 public class SudokuDriver {
-	private static int MAX_TRIES = 3;
 	
 	public static void main(String[] args) {
 		//Variable declarations
 		Cell[][] board;
 		int  width, length, boardSize;
-		//Scanner console = new Scanner(System.in);
 		Scanner fileScanner;
 		String input;
 		SudokuBacktrack solver;
 		
-		
-		
-		//Main loop for user input
-		//for (int i = 0; i < MAX_TRIES; i++){
 			try {
-				//System.out.print("Enter the name of the file to be processed: ");
-				
 				fileScanner = new Scanner(new FileReader(args[0]));
 				//Skips past the commented lines at the beginning of the file
 				while(true){
@@ -36,7 +30,6 @@ public class SudokuDriver {
 					}
 				}
 				
-				
 				//Reads the dimensions of the board
 				width = Integer.parseInt(input);
 				length = fileScanner.nextInt();
@@ -44,7 +37,6 @@ public class SudokuDriver {
 				boardSize = length * width;
 				board = new Cell[boardSize][boardSize];
 
-				
 				//Initializes the board
 				for (int w = 0; w < boardSize; w++){
 
@@ -53,44 +45,38 @@ public class SudokuDriver {
 						board[w][l].value = fileScanner.nextInt();
 						board[w][l].row = w;
 						board[w][l].col = l;
-						
 					}
-					
 				}
 				
-				//Prints out the board, mainly for testing purposes, these loops may be commented out
+				//Printing out inputed board
+				System.out.println("Input puzzle:");
 				printBoard(board);
 				
-				//Creates the solver object
+				//Creating the solver object
 				solver = new SudokuBacktrack(width, length, board);
 				if(solver.findSolution()){
 					board = solver.getSolution();
-				
+					System.out.println("Solution found.\n" + "Solved Puzzle:");
 					printBoard(board);
 				}
-				
 				else{
-					System.out.println("no solution found... sucks");
+					System.out.println("No solution found.");
 				}
-				
-				//console.close();
-				//break;
-				
-				
 			}
 			catch (FileNotFoundException e1){
-				System.out.println("Could not locate file");
+				System.out.println("Could not locate file.");
 			}
 			catch (InputMismatchException | NumberFormatException e2){
 				System.out.println("There was an error processing the file," +
 						"\nplease make sure you specified the correct file, or try another file.");
-				
 			}
 		}
-	//}
 	
+	/**
+	 * Prints current state of the puzzle board
+	 * @param board of Cell[][] objects
+	 */
 	private static void printBoard(Cell[][] board){
-		
 		for (int w = 0; w < board.length; w++){
 			
 			for (int l = 0; l < board.length; l++){
@@ -99,6 +85,4 @@ public class SudokuDriver {
 			System.out.println();
 		}
 	}
-	
-	
 }
