@@ -1,0 +1,296 @@
+public class SudokuBacktrack {
+	//Variable declarations
+	Cell[][] board;
+	private int[][] blanks;
+	Cell[][] finalSolution;
+	private int width, length, boardSize, numBlanks;
+	private boolean solutionFound;
+
+	/**
+	 * Constructor
+	 * @param width the width of the inner boxes of the puzzle
+	 * @param length the length of the inner boxes of the puzzle
+	 * @param board the initial, unsolved board
+	 */
+	public SudokuBacktrack(int width, int length, Cell[][] board){
+		this.width = width;
+		this.length = length;
+		this.board = board;
+		this.boardSize = width * length;
+		this.solutionFound = false;
+	}
+
+	/**
+	 * Gets the solution to the Sudoku board
+	 * @return null if the board has not been found, or the completed board
+	 */
+	public Cell[][] getSolution(){
+		if (solutionFound)
+			return this.finalSolution;
+		else
+			return null;
+	}
+
+	/**
+	 * Checks if puzzle has solution
+	 * @return true if solution was found, false if no solution found
+	 */
+	public boolean hasSolution(){
+		return solutionFound;
+	}
+
+	/**
+	 * This method checks if puzzle is already solved, already not solvable, or needs to be solved
+	 * @return true if the board has a solution, otherwise calls to solver() to solve puzzle
+	 */
+	public boolean findSolution(){
+		System.out.print("Are there blanks?  ");
+		if (findNextBlank() == null){	//if there are no blanks
+			if (!duplicatesFull(board)){	//and if there are no duplicates
+				System.out.println("No.\n" + "Are there duplicates?  " + "No.");
+				createFinalSolution(board);
+				solutionFound=true;
+				return solutionFound;	//solution has been found
+			}
+			else{	//there are no blanks but duplicates exist, backtrack
+				System.out.println("No.\n" + "Are there duplicates?\n" + "Yes.");
+				return solver();
+			}
+		}
+		System.out.println("Yes." + "\nAttempting to solve puzzle...");	//blanks exist
+		return solver();
+	}
+	
+	/**
+	 * This method attempts to find the solution to the given Sudoku board
+	 * @return true if the board has a solution, false if it does not
+	 */
+	public boolean solver(){
+		Cell temp = findNextBlank();  
+		if (temp == null){
+			createFinalSolution(board);
+			solutionFound = true;
+			return true;
+		}
+		//Try values 1 through l*w 	
+		for(int num=1; num<=length*width; num++){
+			//if duplicates is false, set space to blank and continue with for loop
+			temp.value = num;
+			if (duplicatesSingle(board, temp) == false){
+				if (solver())	//recursive call to itself
+					return true;
+			}
+		}
+		temp.value = 0;	//set space back to blank, and continue through possible values
+		return false;
+	}
+
+	/**
+	 * Fills all the unknown spaces in the board with a starting value
+	 */
+	public void fillInSolution(){
+		for (int i = 0; i < numBlanks; i++){
+			board[blanks[i][0]][blanks[i][1]].value = 1;
+		}
+	}
+	
+	/**
+	 * Fills in current blank with value
+	 * @param int of current value iteration
+	 */
+	public void fillinBlank(int i){
+		board[blanks[i][0]][blanks[i][1]].value = 1;
+	}
+	
+	/**
+	 * Copies the final board into a separate 2D array so we don't lose it
+	 * @param board the board to be copied
+	 */
+	private void createFinalSolution(Cell[][] board){
+		finalSolution = new Cell[boardSize][boardSize];
+		
+		for (int i = 0; i < boardSize; i++){
+			for (int j = 0; j < boardSize; j++){
+				finalSolution[i][j] = new Cell();
+				finalSolution[i][j].value = board[i][j].value;
+			}
+		}
+	}
+	/**
+	 * checks duplicates for every row, column and box on board
+	 * calls methods to run all three checks (columns, rows, boxes)
+	 * @param board of Cell[][], the board to be checked
+	 * @return true if the board does not contain duplicates, false if the board contains duplicates
+	 */
+	public boolean duplicatesFull(Cell[][] board){
+		return (checkColumns(board) || checkRows(board) || checkBoxes(board));
+	}
+	/**
+	 * checks duplicates for a single row, column and box on board
+	 * calls methods to run all three checks (column, row, box)
+	 * @param board of Cell[][], the board to be checked
+	 * @param Cell temp, the current cell object that contains which row, column and box to check
+	 * @return true if the board does not contain duplicates, false if the board contains duplicates
+	 */
+	public boolean duplicatesSingle(Cell[][] board, Cell temp){
+		return (checkColumn(board,temp) || checkRow(board,temp) || checkBox(board,temp));
+	}
+	
+	/**
+ 	 * checks current column for duplicate numbers
+	 * @param board the board to be checked
+	 * @param the cell who's column needs to be checked
+	 * @return true if the current column contains duplicate numbers, false if the current column does not contain duplicates
+	 */
+	public boolean checkColumn(Cell[][] board, Cell temp){
+		boolean[] nums = new boolean[boardSize +1];
+		
+		for(int i=0; i<board.length; i++){
+			
+			if (nums[board[i][temp.col].value] && board[i][temp.col].value != 0){	//if a cell is == temp and the cell is not a blank, duplicate was found
+				return true;
+			}
+			else{
+				nums[board[i][temp.col].value] = true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+ 	 * checks current row for duplicate numbers
+	 * @param board the board to be checked
+	 * @param the cell who's row needs to be checked
+	 * @return true if the current row contains duplicate numbers, false if the current row does not contain duplicates
+	 */
+	public boolean checkRow(Cell[][] board, Cell temp){
+		boolean[] nums = new boolean[boardSize +1];
+		
+		for(int i=0; i<board.length; i++){
+			if (nums[board[temp.row][i].value] && board[temp.row][i].value != 0){	//if a cell is == temp and the cell is not a blank, duplicate was found
+				return true;
+			}
+			else{
+				nums[board[temp.row][i].value] = true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+ 	 * checks current box for duplicate numbers
+	 * @param board the board to be checked
+	 * @param the cell who's box needs to be checked
+	 * @return true if the current box contains duplicate numbers, false if the current box does not contain duplicates
+	 */
+	public boolean checkBox(Cell[][] board, Cell temp){
+		boolean[] nums = new boolean[boardSize +1];
+		int startRow = 0;
+		int startCol = 0;
+		//determining which box we want to check
+		//getting beginning of box row
+		startRow = (temp.row/length)*length;
+		//getting beginning of box column
+		startCol = (temp.col/width)*width;
+		
+		for (int rows=startRow; rows<length +startRow; rows++){
+			for (int cols=startCol; cols<width + startCol; cols++){
+				if (nums[board[rows][cols].value] && board[rows][cols].value != 0){	//if a cell is == temp and the cell is not a blank, duplicate was found
+					return true;
+				}
+				else{
+					nums[board[rows][cols].value] = true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+ 	 * checks each column for duplicate numbers
+	 * @param board the board to be checked
+	 * @return true if the columns of the board contain duplicated numbers, false if the columns do not contain duplicated numbers
+	 */
+	public boolean checkColumns(Cell[][] board){
+		boolean[] numbers;
+		
+		for (int i = 0; i < board.length; i++) {
+			numbers = new boolean[boardSize + 1];
+			for (int j=0; j < board.length; j++) {
+				if (numbers[board[j][i].value] && board[j][i].value != 0){
+					return true;
+				}
+				else{
+					numbers[board[j][i].value] = true;
+				}	
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * checks each row for duplicate numbers
+	 * @param board2 the board to be checked
+	 * @return true if the rows of the board contain duplicated numbers, false if the rows do not contain duplicated numbers
+	 */
+	public boolean checkRows(Cell[][] board2){
+		boolean[] numbers;
+		for (int i = 0; i < board2.length; i++) {
+			numbers = new boolean[boardSize + 1];
+			for (int j=0; j < board2.length; j++) {
+				if (numbers[board2[i][j].value] && board[i][j].value != 0){
+					return true;
+				}
+				else{
+					numbers[board2[i][j].value] = true;
+				}	
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks the inner boxes for duplicate items
+	 * @param board2 the board to be checked
+	 * @return false if the board contains no duplicate items, true if the board contains duplicates
+	 */
+	public boolean checkBoxes(Cell[][] board2){
+		boolean[] numbers; 
+
+		//outer loops controls which box we are currently looking at
+		for (int boxX = 0; boxX < boardSize; boxX += length){
+			for (int boxY = 0; boxY < boardSize; boxY += width){
+				//This is initialized to the default of all false
+				numbers = new boolean[boardSize + 1];
+
+				//Inner loops check each box for duplicate numbers
+				for (int x = boxX; x < length + boxX; x++){
+					for (int y = boxY; y < width + boxY; y++){
+						if (numbers[board2[x][y].value] && board[x][y].value != 0){
+							return true;
+						}
+						else{
+							numbers[board2[x][y].value] = true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Finds the next available blank in the puzzle
+	 * @return cell location of next blank cell or null if no other blanks
+	 */
+	public Cell findNextBlank(){
+		for (int i = 0; i < boardSize; i++){
+			for (int j = 0; j < boardSize; j++){
+				if (board[i][j].value == 0){
+					return board[i][j];
+				}
+			}
+		}
+		return null;
+	}
+}
